@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 
 export default function Home() {
   return (
@@ -17,9 +18,14 @@ export default function Home() {
           Bienvenido a nuestra casa rural. Ofrecemos habitaciones acogedoras, vistas increíbles y
           una experiencia inolvidable.
         </p>
-        <button className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
-          Consultar Disponibilidad
-        </button>
+        <div className="space-y-4">
+          <button className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
+            Consultar Disponibilidad
+          </button>
+          <button className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
+            <Link href="/rooms">Ver Habitaciones</Link>
+          </button>
+        </div>
       </main>
 
       {/* Footer */}
