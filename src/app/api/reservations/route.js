@@ -6,6 +6,7 @@ let reservations = [
     checkIn: "2025-01-15",
     checkOut: "2025-01-17",
     status: "Confirmada",
+    userId: 1, // Relacionada con el usuario Juan Pérez
   },
   {
     id: 2,
@@ -14,10 +15,24 @@ let reservations = [
     checkIn: "2025-01-18",
     checkOut: "2025-01-22",
     status: "Cancelada",
+    userId: 2, // Relacionada con el usuario María Gómez
   },
 ];
 
 export async function GET(request) {
+  const url = new URL(request.url);
+  const userId = url.searchParams.get("userId");
+
+  if (userId) {
+    // Filtrar las reservas por usuario si se proporciona un userId
+    const userReservations = reservations.filter(
+      (reservation) => reservation.userId === parseInt(userId, 10)
+    );
+    return new Response(JSON.stringify(userReservations), {
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+
   return new Response(JSON.stringify(reservations), {
     headers: { "Content-Type": "application/json" },
   });

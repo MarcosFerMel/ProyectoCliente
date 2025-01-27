@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 
-// Definir el tipo para una habitación y una reserva
 type Room = {
   id: number;
   name: string;
@@ -11,35 +10,45 @@ type Room = {
   status: string;
 };
 
+type User = {
+  id: number;
+  name: string;
+};
+
 export default function Rooms() {
   const [rooms, setRooms] = useState<Room[]>([]);
+  const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const [selectedRoom, setSelectedRoom] = useState<Room | null>(null); // Habitación seleccionada
-  const [guestName, setGuestName] = useState(""); // Nombre del huésped
-  const [checkIn, setCheckIn] = useState(""); // Fecha de check-in
-  const [checkOut, setCheckOut] = useState(""); // Fecha de check-out
-  const [modalOpen, setModalOpen] = useState(false); // Estado del modal
+  const [selectedRoom, setSelectedRoom] = useState<Room | null>(null);
+  const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
+  const [guestName, setGuestName] = useState("");
+  const [checkIn, setCheckIn] = useState("");
+  const [checkOut, setCheckOut] = useState("");
+  const [modalOpen, setModalOpen] = useState(false);
 
-  // Llamar a la API al cargar la página
+  // Llamar a la API al cargar habitaciones y usuarios
   useEffect(() => {
-    const fetchRooms = async () => {
+    const fetchData = async () => {
       try {
-        const response = await fetch("/api/rooms");
-        const data = await response.json();
-        setRooms(data);
+        const roomsResponse = await fetch("/api/rooms");
+        const usersResponse = await fetch("/api/users");
+        const roomsData = await roomsResponse.json();
+        const usersData = await usersResponse.json();
+        setRooms(roomsData);
+        setUsers(usersData);
       } catch (error) {
-        console.error("Error al cargar las habitaciones:", error);
+        console.error("Error al cargar datos:", error);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchRooms();
+    fetchData();
   }, []);
 
   const handleReserve = async () => {
-    if (!guestName || !checkIn || !checkOut) {
+    if (!guestName || !checkIn || !checkOut || !selectedUserId) {
       alert("Por favor, complete todos los campos.");
       return;
     }
@@ -51,6 +60,7 @@ export default function Rooms() {
         checkIn,
         checkOut,
         status: "Confirmada",
+        userId: selectedUserId,
       };
 
       const response = await fetch("/api/reservations", {
@@ -128,30 +138,45 @@ export default function Rooms() {
             <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
               <h2 className="text-xl font-bold mb-4">Reservar {selectedRoom?.name}</h2>
               <label className="block mb-2">
+                Seleccione Usuario:
+                <select
+                  value={selectedUserId || ""}
+                  onChange={(e) => setSelectedUserId(Number(e.target.value))}
+                  className="w-full border border-gray-300 rounded px-3 py-2 mt-1"
+                >
+                  <option value="">Seleccione un usuario</option>
+                  {users.map((user) => (
+                    <option key={user.id} value={user.id}>
+                      {user.name}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <label className="block mb-2">
                 Nombre del Huésped:
                 <input
                   type="text"
-                  className="w-full border border-gray-300 rounded px-3 py-2 mt-1"
                   value={guestName}
                   onChange={(e) => setGuestName(e.target.value)}
+                  className="w-full border border-gray-300 rounded px-3 py-2 mt-1"
                 />
               </label>
               <label className="block mb-2">
                 Check-In:
                 <input
                   type="date"
-                  className="w-full border border-gray-300 rounded px-3 py-2 mt-1"
                   value={checkIn}
                   onChange={(e) => setCheckIn(e.target.value)}
+                  className="w-full border border-gray-300 rounded px-3 py-2 mt-1"
                 />
               </label>
               <label className="block mb-2">
                 Check-Out:
                 <input
                   type="date"
-                  className="w-full border border-gray-300 rounded px-3 py-2 mt-1"
                   value={checkOut}
                   onChange={(e) => setCheckOut(e.target.value)}
+                  className="w-full border border-gray-300 rounded px-3 py-2 mt-1"
                 />
               </label>
               <div className="flex justify-end gap-4 mt-4">
