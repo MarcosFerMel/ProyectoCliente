@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 
-// Tipo para una reserva
 type Reservation = {
   id: number;
   room: string;
@@ -16,7 +15,7 @@ export default function Reservations() {
   const [reservations, setReservations] = useState<Reservation[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Llamar a la API para obtener las reservas
+  // Obtener reservas de la API
   useEffect(() => {
     const fetchReservations = async () => {
       try {
@@ -32,6 +31,31 @@ export default function Reservations() {
 
     fetchReservations();
   }, []);
+
+  // Función para cancelar reserva
+  const handleCancelReservation = async (id: number) => {
+    const confirmCancel = confirm("¿Estás seguro de que deseas cancelar esta reserva?");
+    if (!confirmCancel) return;
+
+    try {
+      const response = await fetch(`/api/reservations?id=${id}`, {
+        method: "DELETE",
+      });
+
+      if (response.ok) {
+        alert("Reserva cancelada con éxito");
+        setReservations((prevReservations) =>
+          prevReservations.map((res) =>
+            res.id === id ? { ...res, status: "Cancelada" } : res
+          )
+        );
+      } else {
+        alert("Error al cancelar la reserva.");
+      }
+    } catch (error) {
+      console.error("Error al cancelar la reserva:", error);
+    }
+  };
 
   if (loading) {
     return <p className="text-center mt-8">Cargando reservas...</p>;
@@ -50,6 +74,7 @@ export default function Reservations() {
                 <th className="border border-gray-300 px-4 py-2">Check-In</th>
                 <th className="border border-gray-300 px-4 py-2">Check-Out</th>
                 <th className="border border-gray-300 px-4 py-2">Estado</th>
+                <th className="border border-gray-300 px-4 py-2">Acciones</th>
               </tr>
             </thead>
             <tbody>
@@ -67,6 +92,16 @@ export default function Reservations() {
                     }`}
                   >
                     {reservation.status}
+                  </td>
+                  <td className="border border-gray-300 px-4 py-2">
+                    {reservation.status === "Confirmada" && (
+                      <button
+                        onClick={() => handleCancelReservation(reservation.id)}
+                        className="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-3 rounded"
+                      >
+                        Cancelar
+                      </button>
+                    )}
                   </td>
                 </tr>
               ))}
