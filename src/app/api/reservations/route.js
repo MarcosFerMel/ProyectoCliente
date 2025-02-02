@@ -25,7 +25,7 @@ let reservations = [
   },
 ];
 
-// Obtener reservas (solo autenticados)
+// Obtener reservas (Usuarios ven solo sus reservas, Admins ven todas)
 export async function GET(request) {
   const token = request.cookies.get("auth_token")?.value;
 
@@ -35,18 +35,20 @@ export async function GET(request) {
 
   try {
     const decoded = jwt.verify(token, SECRET_KEY);
-    const userId = decoded.id;
+    const { id: userId, role: userRole } = decoded;
 
-    // Filtrar reservas por userId
+    if (userRole === "admin") {
+      return NextResponse.json(reservations); // Admin ve todas las reservas
+    }
+
     const userReservations = reservations.filter((res) => res.userId === userId);
-
     return NextResponse.json(userReservations);
   } catch (error) {
     return NextResponse.json({ message: "Token inválido" }, { status: 401 });
   }
 }
 
-// Crear nueva reserva (solo autenticados)
+// Crear nueva reserva (Solo autenticados)
 export async function POST(request) {
   const token = request.cookies.get("auth_token")?.value;
 
@@ -71,7 +73,7 @@ export async function POST(request) {
   }
 }
 
-// Cancelar reserva (solo autenticados)
+// Cancelar reserva (Solo autenticados)
 export async function DELETE(request) {
   const token = request.cookies.get("auth_token")?.value;
 
@@ -82,6 +84,7 @@ export async function DELETE(request) {
   try {
     const decoded = jwt.verify(token, SECRET_KEY);
     const userId = decoded.id;
+    const userRole = decoded.role;
 
     const url = new URL(request.url);
     const id = parseInt(url.searchParams.get("id") || "0", 10);
@@ -90,9 +93,15 @@ export async function DELETE(request) {
       return NextResponse.json({ message: "ID de reserva inválido" }, { status: 400 });
     }
 
-    const reservationIndex = reservations.findIndex((res) => res.id === id && res.userId === userId);
+    const reservationIndex = reservations.findIndex((res) => res.id === id);
+
     if (reservationIndex === -1) {
-      return NextResponse.json({ message: "Reserva no encontrada o no autorizada" }, { status: 404 });
+      return NextResponse.json({ message: "Reserva no encontrada" }, { status: 404 });
+    }
+
+    // Verificar si el usuario tiene permiso para cancelar la reserva
+    if (reservations[reservationIndex].userId !== userId && userRole !== "admin") {
+      return NextResponse.json({ message: "No autorizado" }, { status: 403 });
     }
 
     // Actualizar el estado de la reserva en lugar de eliminarla físicamente

@@ -1,12 +1,14 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
-// Definir el tipo para un usuario y una reserva
+// Definir los tipos para usuarios y reservas
 type User = {
   id: number;
   name: string;
   email: string;
+  role: string;
 };
 
 type Reservation = {
@@ -24,25 +26,49 @@ export default function Users() {
   const [loadingUsers, setLoadingUsers] = useState(true);
   const [loadingReservations, setLoadingReservations] = useState(false);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
+  const router = useRouter();
 
-  // Llamar a la API para obtener usuarios
+  // Obtener usuario autenticado
   useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        const response = await fetch("/api/users");
-        const data = await response.json();
-        setUsers(data);
-      } catch (error) {
-        console.error("Error al cargar los usuarios:", error);
-      } finally {
-        setLoadingUsers(false);
+    const fetchUser = async () => {
+      const response = await fetch("/api/auth");
+      if (!response.ok) {
+        router.push("/login"); // Si no está autenticado, redirigir a login
+        return;
+      }
+
+      const userData = await response.json();
+      setCurrentUser(userData);
+
+      if (userData.role !== "admin") {
+        router.push("/"); // Si no es admin, redirigir a home
       }
     };
 
-    fetchUsers();
-  }, []);
+    fetchUser();
+  }, [router]);
 
-  // Llamar a la API para obtener reservas de un usuario
+  // Obtener la lista de usuarios (solo admin)
+  useEffect(() => {
+    if (currentUser?.role === "admin") {
+      const fetchUsers = async () => {
+        try {
+          const response = await fetch("/api/users");
+          const data = await response.json();
+          setUsers(data);
+        } catch (error) {
+          console.error("Error al cargar los usuarios:", error);
+        } finally {
+          setLoadingUsers(false);
+        }
+      };
+
+      fetchUsers();
+    }
+  }, [currentUser]);
+
+  // Obtener reservas del usuario seleccionado
   const fetchReservationsByUser = async (userId: number) => {
     setLoadingReservations(true);
     try {
@@ -56,36 +82,47 @@ export default function Users() {
     }
   };
 
+  if (loadingUsers) {
+    return <p className="text-center mt-8">Cargando usuarios...</p>;
+  }
+
   return (
     <div className="min-h-screen bg-gray-100 py-8">
       <div className="container mx-auto">
         <h1 className="text-3xl font-bold text-center mb-8">Gestión de Usuarios</h1>
 
-        {loadingUsers ? (
-          <p className="text-center">Cargando usuarios...</p>
-        ) : (
-          <div className="bg-white shadow-md rounded-lg p-6 mb-8">
-            <h2 className="text-2xl font-bold mb-4">Usuarios Registrados</h2>
-            <ul>
+        {/* Lista de Usuarios */}
+        <div className="bg-white shadow-md rounded-lg p-6 mb-8">
+          <h2 className="text-2xl font-bold mb-4">Usuarios Registrados</h2>
+          <table className="w-full border-collapse border border-gray-300">
+            <thead>
+              <tr className="bg-gray-200">
+                <th className="border border-gray-300 px-4 py-2">Nombre</th>
+                <th className="border border-gray-300 px-4 py-2">Email</th>
+                <th className="border border-gray-300 px-4 py-2">Acción</th>
+              </tr>
+            </thead>
+            <tbody>
               {users.map((user) => (
-                <li key={user.id} className="flex justify-between items-center mb-4">
-                  <span>
-                    {user.name} - {user.email}
-                  </span>
-                  <button
-                    onClick={() => {
-                      setSelectedUser(user);
-                      fetchReservationsByUser(user.id);
-                    }}
-                    className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-                  >
-                    Ver Reservas
-                  </button>
-                </li>
+                <tr key={user.id} className="text-center">
+                  <td className="border border-gray-300 px-4 py-2">{user.name}</td>
+                  <td className="border border-gray-300 px-4 py-2">{user.email}</td>
+                  <td className="border border-gray-300 px-4 py-2">
+                    <button
+                      onClick={() => {
+                        setSelectedUser(user);
+                        fetchReservationsByUser(user.id);
+                      }}
+                      className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                    >
+                      Ver Reservas
+                    </button>
+                  </td>
+                </tr>
               ))}
-            </ul>
-          </div>
-        )}
+            </tbody>
+          </table>
+        </div>
 
         {/* Mostrar reservas del usuario seleccionado */}
         {selectedUser && (
@@ -96,7 +133,7 @@ export default function Users() {
             {loadingReservations ? (
               <p className="text-center">Cargando reservas...</p>
             ) : reservations.length > 0 ? (
-              <table className="w-full table-auto border-collapse border border-gray-200">
+              <table className="w-full border-collapse border border-gray-300">
                 <thead>
                   <tr className="bg-gray-200">
                     <th className="border border-gray-300 px-4 py-2">Habitación</th>
@@ -107,16 +144,10 @@ export default function Users() {
                 </thead>
                 <tbody>
                   {reservations.map((reservation) => (
-                    <tr key={reservation.id}>
-                      <td className="border border-gray-300 px-4 py-2">
-                        {reservation.room}
-                      </td>
-                      <td className="border border-gray-300 px-4 py-2">
-                        {reservation.checkIn}
-                      </td>
-                      <td className="border border-gray-300 px-4 py-2">
-                        {reservation.checkOut}
-                      </td>
+                    <tr key={reservation.id} className="text-center">
+                      <td className="border border-gray-300 px-4 py-2">{reservation.room}</td>
+                      <td className="border border-gray-300 px-4 py-2">{reservation.checkIn}</td>
+                      <td className="border border-gray-300 px-4 py-2">{reservation.checkOut}</td>
                       <td
                         className={`border border-gray-300 px-4 py-2 ${
                           reservation.status === "Confirmada"

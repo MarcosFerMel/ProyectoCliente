@@ -6,6 +6,7 @@ import users from "./users";
 // Clave secreta para JWT
 const SECRET_KEY = "mi_secreto_super_seguro";
 
+// Login: Verifica credenciales y genera un token
 export async function POST(request) {
   const { email, password } = await request.json();
 
@@ -21,18 +22,26 @@ export async function POST(request) {
     return NextResponse.json({ message: "Contraseña incorrecta" }, { status: 401 });
   }
 
-  // Generar token JWT
-  const token = jwt.sign({ id: user.id, name: user.name, email: user.email }, SECRET_KEY, {
-    expiresIn: "1h",
-  });
+  // Generar token JWT con rol de usuario
+  const token = jwt.sign(
+    { id: user.id, name: user.name, email: user.email, role: user.role },
+    SECRET_KEY,
+    { expiresIn: "1h" }
+  );
 
   // Guardar token en una cookie segura
   const response = NextResponse.json({ message: "Login exitoso" });
-  response.cookies.set("auth_token", token, { httpOnly: true, maxAge: 3600 });
+  response.cookies.set("auth_token", token, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    maxAge: 3600,
+    sameSite: "strict",
+  });
 
   return response;
 }
 
+// Autenticación: Verifica el token y devuelve los datos del usuario
 export async function GET(request) {
   // Obtener el token desde las cookies
   const token = request.cookies.get("auth_token")?.value;
@@ -49,8 +58,8 @@ export async function GET(request) {
   }
 }
 
+// Logout: Elimina la cookie de autenticación
 export async function DELETE(request) {
-  // Eliminar la cookie de autenticación (logout)
   const response = NextResponse.json({ message: "Logout exitoso" });
   response.cookies.set("auth_token", "", { maxAge: 0 });
 

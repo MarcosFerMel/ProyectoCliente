@@ -3,10 +3,10 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
-// Definimos el tipo de usuario
+// Definimos el tipo de usuario con rol
 type User = {
   name: string;
-  email?: string; // Agregado por si se necesita más adelante
+  role: string;
 };
 
 export default function Navbar() {
@@ -58,18 +58,33 @@ export default function Navbar() {
           <Link href="/rooms" className="block py-2 lg:py-0 hover:text-gray-300">
             Habitaciones
           </Link>
-          <Link href="/reservations" className="block py-2 lg:py-0 hover:text-gray-300">
-            Reservas
-          </Link>
-          <Link href="/users" className="block py-2 lg:py-0 hover:text-gray-300">
-            Usuarios
-          </Link>
+
+          {/* Solo mostrar "Mis Reservas" si el usuario ha iniciado sesión */}
+          {user && (
+            <Link href="/reservations" className="block py-2 lg:py-0 hover:text-gray-300">
+              Mis Reservas
+            </Link>
+          )}
+
+          {/* Solo mostrar "Usuarios" y "Admin" si el usuario es administrador */}
+          {user?.role === "admin" && (
+            <>
+              <Link href="/users" className="block py-2 lg:py-0 hover:text-gray-300">
+                Usuarios
+              </Link>
+              <Link href="/admin" className="block py-2 lg:py-0 font-bold text-yellow-300">
+                Admin
+              </Link>
+            </>
+          )}
 
           {/* Autenticación */}
           <div className="flex flex-col lg:flex-row lg:items-center lg:space-x-4">
             {user ? (
               <div className="flex flex-col lg:flex-row lg:items-center lg:space-x-4">
-                <span className="block py-2 lg:py-0 font-semibold">Hola, {user.name}</span>
+                <span className="block py-2 lg:py-0 font-semibold">
+                  {user.name} ({user.role === "admin" ? "Administrador" : "Cliente"})
+                </span>
                 <button
                   onClick={handleLogout}
                   className="block py-2 lg:py-0 bg-red-500 hover:bg-red-700 text-white px-4 rounded"
