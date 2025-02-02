@@ -15,7 +15,6 @@ export default function Reservations() {
   const [reservations, setReservations] = useState<Reservation[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Obtener reservas de la API
   useEffect(() => {
     const fetchReservations = async () => {
       try {
@@ -32,75 +31,37 @@ export default function Reservations() {
     fetchReservations();
   }, []);
 
-  // Función para cancelar reserva
-  const handleCancelReservation = async (id: number) => {
-    const confirmCancel = confirm("¿Estás seguro de que deseas cancelar esta reserva?");
-    if (!confirmCancel) return;
-
-    try {
-      const response = await fetch(`/api/reservations?id=${id}`, {
-        method: "DELETE",
-      });
-
-      if (response.ok) {
-        alert("Reserva cancelada con éxito");
-        setReservations((prevReservations) =>
-          prevReservations.map((res) =>
-            res.id === id ? { ...res, status: "Cancelada" } : res
-          )
-        );
-      } else {
-        alert("Error al cancelar la reserva.");
-      }
-    } catch (error) {
-      console.error("Error al cancelar la reserva:", error);
-    }
-  };
-
-  if (loading) {
-    return <p className="text-center mt-8">Cargando reservas...</p>;
-  }
-
   return (
-    <div className="min-h-screen bg-gray-100 py-8">
-      <div className="container mx-auto">
-        <h1 className="text-3xl font-bold text-center mb-8">Gestión de Reservas</h1>
+    <div className="min-h-screen">
+      <h1 className="text-3xl font-bold text-center mb-8">Gestión de Reservas</h1>
+      {loading ? (
+        <p className="text-center">Cargando reservas...</p>
+      ) : (
         <div className="bg-white shadow-md rounded-lg p-4">
-          <table className="w-full table-auto border-collapse border border-gray-200">
+          <table className="table-container">
             <thead>
-              <tr className="bg-gray-200">
-                <th className="border border-gray-300 px-4 py-2">Habitación</th>
-                <th className="border border-gray-300 px-4 py-2">Huésped</th>
-                <th className="border border-gray-300 px-4 py-2">Check-In</th>
-                <th className="border border-gray-300 px-4 py-2">Check-Out</th>
-                <th className="border border-gray-300 px-4 py-2">Estado</th>
-                <th className="border border-gray-300 px-4 py-2">Acciones</th>
+              <tr>
+                <th>Habitación</th>
+                <th>Huésped</th>
+                <th>Check-In</th>
+                <th>Check-Out</th>
+                <th>Estado</th>
+                <th>Acciones</th>
               </tr>
             </thead>
             <tbody>
               {reservations.map((reservation) => (
                 <tr key={reservation.id}>
-                  <td className="border border-gray-300 px-4 py-2">{reservation.room}</td>
-                  <td className="border border-gray-300 px-4 py-2">{reservation.guestName}</td>
-                  <td className="border border-gray-300 px-4 py-2">{reservation.checkIn}</td>
-                  <td className="border border-gray-300 px-4 py-2">{reservation.checkOut}</td>
-                  <td
-                    className={`border border-gray-300 px-4 py-2 ${
-                      reservation.status === "Confirmada"
-                        ? "text-green-600"
-                        : "text-red-600"
-                    }`}
-                  >
+                  <td>{reservation.room}</td>
+                  <td>{reservation.guestName}</td>
+                  <td>{reservation.checkIn}</td>
+                  <td>{reservation.checkOut}</td>
+                  <td className={reservation.status === "Confirmada" ? "text-green-600" : "text-red-600"}>
                     {reservation.status}
                   </td>
-                  <td className="border border-gray-300 px-4 py-2">
+                  <td>
                     {reservation.status === "Confirmada" && (
-                      <button
-                        onClick={() => handleCancelReservation(reservation.id)}
-                        className="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-3 rounded"
-                      >
-                        Cancelar
-                      </button>
+                      <button className="btn-danger">Cancelar</button>
                     )}
                   </td>
                 </tr>
@@ -108,7 +69,7 @@ export default function Reservations() {
             </tbody>
           </table>
         </div>
-      </div>
+      )}
     </div>
   );
 }
