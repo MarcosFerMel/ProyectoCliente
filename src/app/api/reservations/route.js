@@ -1,3 +1,9 @@
+import jwt from "jsonwebtoken";
+import { NextResponse } from "next/server";
+import users from "../auth/users";
+
+const SECRET_KEY = "mi_secreto_super_seguro";
+
 let reservations = [
   {
     id: 1,
@@ -19,61 +25,81 @@ let reservations = [
   },
 ];
 
+// Obtener reservas (solo autenticados)
 export async function GET(request) {
-  const url = new URL(request.url);
-  const userId = url.searchParams.get("userId");
+  const token = request.cookies.get("auth_token")?.value;
 
-  if (userId) {
-    const userReservations = reservations.filter(
-      (reservation) => reservation.userId === parseInt(userId, 10)
-    );
-    return new Response(JSON.stringify(userReservations), {
-      headers: { "Content-Type": "application/json" },
-    });
+  if (!token) {
+    return NextResponse.json({ message: "No autenticado" }, { status: 401 });
   }
 
-  return new Response(JSON.stringify(reservations), {
-    headers: { "Content-Type": "application/json" },
-  });
+  try {
+    const decoded = jwt.verify(token, SECRET_KEY);
+    const userId = decoded.id;
+
+    // Filtrar reservas por userId
+    const userReservations = reservations.filter((res) => res.userId === userId);
+
+    return NextResponse.json(userReservations);
+  } catch (error) {
+    return NextResponse.json({ message: "Token inválido" }, { status: 401 });
+  }
 }
 
+// Crear nueva reserva (solo autenticados)
 export async function POST(request) {
-  const newReservation = await request.json();
-  newReservation.id = reservations.length + 1; // Generar un ID único
-  newReservation.status = "Confirmada"; // Por defecto, la reserva está confirmada
-  reservations.push(newReservation);
+  const token = request.cookies.get("auth_token")?.value;
 
-  return new Response(JSON.stringify(newReservation), {
-    headers: { "Content-Type": "application/json" },
-    status: 201,
-  });
+  if (!token) {
+    return NextResponse.json({ message: "No autenticado" }, { status: 401 });
+  }
+
+  try {
+    const decoded = jwt.verify(token, SECRET_KEY);
+    const userId = decoded.id;
+
+    const newReservation = await request.json();
+    newReservation.id = reservations.length + 1; // Generar un ID único
+    newReservation.status = "Confirmada"; // Por defecto, la reserva está confirmada
+    newReservation.userId = userId; // Asociar reserva al usuario autenticado
+
+    reservations.push(newReservation);
+
+    return NextResponse.json(newReservation, { status: 201 });
+  } catch (error) {
+    return NextResponse.json({ message: "Token inválido" }, { status: 401 });
+  }
 }
 
-// NUEVO: API para eliminar reservas
+// Cancelar reserva (solo autenticados)
 export async function DELETE(request) {
-  const url = new URL(request.url);
-  const id = parseInt(url.searchParams.get("id") || "0", 10);
+  const token = request.cookies.get("auth_token")?.value;
 
-  if (!id) {
-    return new Response(
-      JSON.stringify({ message: "ID de reserva inválido" }),
-      { status: 400, headers: { "Content-Type": "application/json" } }
-    );
+  if (!token) {
+    return NextResponse.json({ message: "No autenticado" }, { status: 401 });
   }
 
-  const reservationIndex = reservations.findIndex((res) => res.id === id);
-  if (reservationIndex === -1) {
-    return new Response(
-      JSON.stringify({ message: "Reserva no encontrada" }),
-      { status: 404, headers: { "Content-Type": "application/json" } }
-    );
+  try {
+    const decoded = jwt.verify(token, SECRET_KEY);
+    const userId = decoded.id;
+
+    const url = new URL(request.url);
+    const id = parseInt(url.searchParams.get("id") || "0", 10);
+
+    if (!id) {
+      return NextResponse.json({ message: "ID de reserva inválido" }, { status: 400 });
+    }
+
+    const reservationIndex = reservations.findIndex((res) => res.id === id && res.userId === userId);
+    if (reservationIndex === -1) {
+      return NextResponse.json({ message: "Reserva no encontrada o no autorizada" }, { status: 404 });
+    }
+
+    // Actualizar el estado de la reserva en lugar de eliminarla físicamente
+    reservations[reservationIndex].status = "Cancelada";
+
+    return NextResponse.json({ message: "Reserva cancelada con éxito" }, { status: 200 });
+  } catch (error) {
+    return NextResponse.json({ message: "Token inválido" }, { status: 401 });
   }
-
-  // Actualizar el estado de la reserva en lugar de eliminarla físicamente
-  reservations[reservationIndex].status = "Cancelada";
-
-  return new Response(
-    JSON.stringify({ message: "Reserva cancelada con éxito" }),
-    { status: 200, headers: { "Content-Type": "application/json" } }
-  );
 }
