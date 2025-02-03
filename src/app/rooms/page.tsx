@@ -102,7 +102,7 @@ export default function Rooms() {
             >
               <h2 className="text-xl font-bold">{room.name}</h2>
               <p className="mt-2">Capacidad: {room.capacity} personas</p>
-              <p>Precio: ${room.price} / noche</p>
+              <p>Precio: {room.price} € / noche</p>
               <p
                 className={`mt-2 ${
                   room.status === "Disponible" ? "text-green-600" : "text-red-600"
