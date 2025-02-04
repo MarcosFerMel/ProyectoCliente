@@ -1,4 +1,5 @@
 import Image from "next/image";
+import GalleryComponent from "@/app/components/Gallery";
 
 export default function Home() {
   return (
@@ -46,6 +47,9 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      {/* Galería de Imágenes */}
+      <GalleryComponent />
 
       {/* Footer */}
       <footer className="bg-gray-800 text-white py-6">
