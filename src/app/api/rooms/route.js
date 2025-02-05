@@ -10,7 +10,8 @@ export async function GET(request) {
         "/images/rooms/habitacion1.jpeg",
         "/images/rooms/habitacion1a.jpeg",
         "/images/rooms/habitacion1b.jpeg"
-      ]
+      ],
+      services: ["WiFi", "TV", "Baño Privado", "Aire Acondicionado","Desayuno Incluido"]
     },
     { 
       id: 2, 
@@ -22,7 +23,8 @@ export async function GET(request) {
         "/images/rooms/habitacion2.jpeg",
         "/images/rooms/habitacion2a.jpeg",
         "/images/rooms/habitacion2b.jpeg"
-      ]
+      ],
+      services: ["WiFi", "Aire Acondicionado", "TV", "Cocina", "Baño Compartido"]
     },
     { 
       id: 3, 
@@ -34,7 +36,8 @@ export async function GET(request) {
         "/images/rooms/habitacion3.jpeg",
         "/images/rooms/habitacion3a.jpeg",
         "/images/rooms/habitacion3b.jpeg"
-      ]
+      ],
+      services: ["WiFi", "TV", "Baño Privado", "Aire Acondicionado","Desayuno Incluido"]
     }
   ];
 

@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import FsLightbox from "fslightbox-react";
 import Image from "next/image";
+import { FaWifi, FaTv, FaSnowflake, FaUtensils, FaBath, FaCheck } from "react-icons/fa";
 
 // Definir los tipos
 type Room = {
@@ -12,6 +13,7 @@ type Room = {
   price: number;
   status: string;
   images: string[];
+  services: string[];
 };
 
 type User = {
@@ -30,20 +32,17 @@ export default function Rooms() {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Estado para el Lightbox
+  const [selectedRoom, setSelectedRoom] = useState<Room | null>(null);
+  const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
+  const [checkIn, setCheckIn] = useState("");
+  const [checkOut, setCheckOut] = useState("");
+  const [modalOpen, setModalOpen] = useState(false);
+
   const [lightboxController, setLightboxController] = useState<LightboxController>({
     toggler: false,
     slide: 1,
     images: [],
   });
-
-  // Estado para gestionar la reserva
-  const [selectedRoom, setSelectedRoom] = useState<Room | null>(null);
-  const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
-  const [guestName, setGuestName] = useState("");
-  const [checkIn, setCheckIn] = useState("");
-  const [checkOut, setCheckOut] = useState("");
-  const [modalOpen, setModalOpen] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -73,7 +72,7 @@ export default function Rooms() {
   };
 
   const handleReserve = async () => {
-    if (!guestName || !checkIn || !checkOut || !selectedUserId) {
+    if (!checkIn || !checkOut || !selectedUserId) {
       alert("Por favor, complete todos los campos.");
       return;
     }
@@ -81,11 +80,10 @@ export default function Rooms() {
     try {
       const reservation = {
         room: selectedRoom?.name,
-        guestName,
+        userId: selectedUserId,
         checkIn,
         checkOut,
         status: "Confirmada",
-        userId: selectedUserId,
       };
 
       const response = await fetch("/api/reservations", {
@@ -99,7 +97,6 @@ export default function Rooms() {
       if (response.ok) {
         alert("Reserva creada con éxito");
         setModalOpen(false);
-        setGuestName("");
         setCheckIn("");
         setCheckOut("");
       } else {
@@ -138,18 +135,26 @@ export default function Rooms() {
                   Estado: {room.status}
                 </p>
 
-                <div className="flex mt-4 space-x-2">
-                  {room.images.map((image, index) => (
-                    <img
-                      key={index}
-                      src={image}
-                      alt={`Vista ${index + 1}`}
-                      className="w-16 h-16 object-cover rounded-lg cursor-pointer hover:scale-105 transition-transform"
-                      onClick={() => openLightbox(room.images, index)}
-                    />
-                  ))}
+                {/* Lista de Servicios */}
+                <div className="mt-4">
+                  <h3 className="text-lg font-semibold">Servicios:</h3>
+                  <ul className="mt-2 grid grid-cols-2 gap-2 text-gray-700">
+                    {room.services.map((service, index) => (
+                      <li key={index} className="flex items-center space-x-2">
+                        {service === "WiFi" && <FaWifi className="text-blue-500" />}
+                        {service === "TV" && <FaTv className="text-gray-600" />}
+                        {service === "Aire Acondicionado" && <FaSnowflake className="text-blue-400" />}
+                        {service === "Desayuno Incluido" && <FaUtensils className="text-yellow-500" />}
+                        {service === "Baño Privado" && <FaBath className="text-blue-700" />}
+                        {service === "Baño Compartido" && <FaBath className="text-blue-700" />}
+                        {service === "Cocina" && <FaUtensils className="text-green-500" />}
+                        <span>{service}</span>
+                      </li>
+                    ))}
+                  </ul>
                 </div>
 
+                {/* Botón Reservar */}
                 {room.status === "Disponible" ? (
                   <button
                     onClick={() => {
@@ -174,22 +179,14 @@ export default function Rooms() {
         </div>
       </div>
 
-      {/* Galería Lightbox */}
-      {lightboxController.images.length > 0 && (
-        <FsLightbox
-          toggler={lightboxController.toggler}
-          sources={lightboxController.images}
-          slide={lightboxController.slide}
-        />
-      )}
-
-      {/* Modal para crear una reserva */}
+      {/* Modal para Reservar */}
       {modalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
           <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
-            <h2 className="text-xl font-bold mb-4">Reservar {selectedRoom?.name}</h2>
-            <label className="block mb-2">
-              Seleccione Usuario:
+            <h2 className="text-xl font-bold mb-4 text-center">Reservar {selectedRoom?.name}</h2>
+
+            <label className="block mb-4">
+              <span className="font-semibold">Seleccione Usuario:</span>
               <select
                 value={selectedUserId || ""}
                 onChange={(e) => setSelectedUserId(Number(e.target.value))}
@@ -203,39 +200,26 @@ export default function Rooms() {
                 ))}
               </select>
             </label>
-            <label className="block mb-2">
-              Nombre del Huésped:
-              <input
-                type="text"
-                value={guestName}
-                onChange={(e) => setGuestName(e.target.value)}
-                className="w-full border border-gray-300 rounded px-3 py-2 mt-1"
-              />
-            </label>
-            <label className="block mb-2">
-              Check-In:
-              <input
-                type="date"
-                value={checkIn}
-                onChange={(e) => setCheckIn(e.target.value)}
-                className="w-full border border-gray-300 rounded px-3 py-2 mt-1"
-              />
-            </label>
-            <label className="block mb-2">
-              Check-Out:
-              <input
-                type="date"
-                value={checkOut}
-                onChange={(e) => setCheckOut(e.target.value)}
-                className="w-full border border-gray-300 rounded px-3 py-2 mt-1"
-              />
-            </label>
-            <div className="flex justify-end gap-4 mt-4">
-              <button onClick={() => setModalOpen(false)} className="bg-gray-300 text-gray-700 px-4 py-2 rounded">
-                Cancelar
-              </button>
+
+            <div className="grid grid-cols-2 gap-4 mb-4">
+              <label className="block">
+                <span className="font-semibold">Check-In:</span>
+                <input type="date" value={checkIn} onChange={(e) => setCheckIn(e.target.value)}
+                  className="w-full border border-gray-300 rounded px-3 py-2 mt-1" />
+              </label>
+              <label className="block">
+                <span className="font-semibold">Check-Out:</span>
+                <input type="date" value={checkOut} onChange={(e) => setCheckOut(e.target.value)}
+                  className="w-full border border-gray-300 rounded px-3 py-2 mt-1" />
+              </label>
+            </div>
+
+            <div className="flex justify-between mt-6">
               <button onClick={handleReserve} className="bg-green-500 hover:bg-green-700 text-white px-4 py-2 rounded">
                 Confirmar Reserva
+              </button>
+              <button onClick={() => setModalOpen(false)} className="bg-gray-400 hover:bg-gray-600 text-white px-4 py-2 rounded">
+                Cancelar
               </button>
             </div>
           </div>
