@@ -31,7 +31,7 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="bg-green-600 text-white py-4 px-6 shadow-md">
+    <nav className="bg-green-700 text-white py-4 px-6 shadow-md">
       <div className="container mx-auto flex justify-between items-center">
         {/* Logo */}
         <Link href="/" className="text-2xl font-bold">
@@ -50,32 +50,27 @@ export default function Navbar() {
         <div
           className={`${
             menuOpen ? "block" : "hidden"
-          } lg:flex lg:items-center lg:space-x-6 absolute lg:relative top-16 lg:top-0 left-0 w-full lg:w-auto bg-green-600 lg:bg-transparent px-6 lg:px-0 py-4 lg:py-0 shadow-md lg:shadow-none`}
+          } lg:flex lg:items-center lg:space-x-6 absolute lg:relative top-16 lg:top-0 left-0 w-full lg:w-auto bg-green-700 lg:bg-transparent px-6 lg:px-0 py-4 lg:py-0 shadow-md lg:shadow-none transition-all`}
         >
-          <Link href="/" className="block py-2 lg:py-0 hover:text-gray-300">
+          <Link href="/" className="block py-2 lg:py-0 hover:text-gray-300 transition">
             Inicio
           </Link>
-          <Link href="/rooms" className="block py-2 lg:py-0 hover:text-gray-300">
+          <Link href="/rooms" className="block py-2 lg:py-0 hover:text-gray-300 transition">
             Habitaciones
           </Link>
 
-          {/* Solo mostrar "Mis Reservas" si el usuario ha iniciado sesión */}
+          {/* Mostrar "Gestión de Reservas" si es admin, sino "Mis Reservas" */}
           {user && (
-            <Link href="/reservations" className="block py-2 lg:py-0 hover:text-gray-300">
-              Mis Reservas
+            <Link href="/reservations" className="block py-2 lg:py-0 hover:text-gray-300 transition">
+              {user.role === "admin" ? "Gestión de Reservas" : "Mis Reservas"}
             </Link>
           )}
 
-          {/* Solo mostrar "Usuarios" y "Admin" si el usuario es administrador */}
+          {/* Solo mostrar "Usuarios" si el usuario es administrador */}
           {user?.role === "admin" && (
-            <>
-              <Link href="/users" className="block py-2 lg:py-0 hover:text-gray-300">
-                Usuarios
-              </Link>
-              <Link href="/admin" className="block py-2 lg:py-0 font-bold text-yellow-300">
-                Admin
-              </Link>
-            </>
+            <Link href="/users" className="block py-2 lg:py-0 hover:text-gray-300 transition">
+              Usuarios
+            </Link>
           )}
 
           {/* Autenticación */}
@@ -87,13 +82,16 @@ export default function Navbar() {
                 </span>
                 <button
                   onClick={handleLogout}
-                  className="block py-2 lg:py-0 bg-red-500 hover:bg-red-700 text-white px-4 rounded"
+                  className="block py-2 lg:py-0 bg-green-800 hover:bg-green-600 text-white px-4 rounded transition-all duration-300"
                 >
                   Salir
                 </button>
               </div>
             ) : (
-              <Link href="/login" className="block py-2 lg:py-0 bg-blue-500 hover:bg-blue-700 text-white px-4 rounded">
+              <Link
+                href="/login"
+                className="block py-2 lg:py-0 bg-green-800 hover:bg-green-600 text-white px-4 rounded transition-all duration-300"
+              >
                 Ingresar
               </Link>
             )}

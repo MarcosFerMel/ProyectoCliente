@@ -15,7 +15,7 @@ type Reservation = {
 export default function Reservations() {
   const [reservations, setReservations] = useState<Reservation[]>([]);
   const [loading, setLoading] = useState(true);
-  const [user, setUser] = useState<{ name: string; id: number } | null>(null);
+  const [user, setUser] = useState<{ name: string; id: number; role: string } | null>(null);
   const router = useRouter();
 
   // Obtener usuario autenticado
@@ -24,7 +24,7 @@ export default function Reservations() {
       try {
         const response = await fetch("/api/auth");
         if (!response.ok) {
-          router.push("/login"); // Redirigir si no está autenticado
+          router.push("/login");
           return;
         }
         const userData = await response.json();
@@ -37,7 +37,7 @@ export default function Reservations() {
     fetchUser();
   }, [router]);
 
-  // Obtener reservas del usuario autenticado
+  // Obtener reservas del usuario autenticado o todas si es admin
   useEffect(() => {
     if (user) {
       const fetchReservations = async () => {
@@ -58,6 +58,27 @@ export default function Reservations() {
     }
   }, [user]);
 
+  // Función para actualizar el estado de una reserva
+  const updateReservationStatus = async (id: number, newStatus: string) => {
+    try {
+      const response = await fetch(`/api/reservations`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id, status: newStatus }),
+      });
+
+      if (response.ok) {
+        setReservations((prev) =>
+          prev.map((res) => (res.id === id ? { ...res, status: newStatus } : res))
+        );
+      } else {
+        alert("Error al actualizar la reserva.");
+      }
+    } catch (error) {
+      console.error("Error al actualizar la reserva:", error);
+    }
+  };
+
   if (loading) {
     return <p className="text-center mt-8">Cargando reservas...</p>;
   }
@@ -76,6 +97,7 @@ export default function Reservations() {
                 <th className="border border-gray-300 px-4 py-2">Check-In</th>
                 <th className="border border-gray-300 px-4 py-2">Check-Out</th>
                 <th className="border border-gray-300 px-4 py-2">Estado</th>
+                {user?.role === "admin" && <th className="border border-gray-300 px-4 py-2">Acciones</th>}
               </tr>
             </thead>
             <tbody>
@@ -86,11 +108,31 @@ export default function Reservations() {
                   <td className="border border-gray-300 px-4 py-2">{reservation.checkOut}</td>
                   <td
                     className={`border border-gray-300 px-4 py-2 ${
-                      reservation.status === "Confirmada" ? "text-green-600" : "text-red-600"
+                      reservation.status === "Confirmada" ? "text-green-600" :
+                      reservation.status === "Cancelada" ? "text-red-600" :
+                      "text-yellow-600"
                     }`}
                   >
                     {reservation.status}
                   </td>
+                  {user?.role === "admin" && (
+                    <td className="border border-gray-300 px-4 py-2">
+                      <button
+                        onClick={() => updateReservationStatus(reservation.id, "Confirmada")}
+                        className="bg-green-500 text-white px-3 py-1 rounded mr-2"
+                        disabled={reservation.status === "Confirmada"}
+                      >
+                        Confirmar
+                      </button>
+                      <button
+                        onClick={() => updateReservationStatus(reservation.id, "Cancelada")}
+                        className="bg-red-500 text-white px-3 py-1 rounded"
+                        disabled={reservation.status === "Cancelada"}
+                      >
+                        Cancelar
+                      </button>
+                    </td>
+                  )}
                 </tr>
               ))}
             </tbody>
