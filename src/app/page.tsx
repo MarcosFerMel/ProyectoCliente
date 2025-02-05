@@ -50,14 +50,7 @@ export default function Home() {
 
       {/* Galería de Imágenes */}
       <GalleryComponent />
-
-      {/* Footer */}
-      <footer className="bg-gray-800 text-white py-6">
-        <div className="container mx-auto text-center">
-          <p>Contacto: casarural@example.com | Tel: 123-456-7890</p>
-          <p>&copy; 2025 Casa Rural Altos de la Sierra</p>
-        </div>
-      </footer>
+      
     </div>
   );
 }
