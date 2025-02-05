@@ -31,7 +31,7 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="bg-green-700 text-white py-4 px-6 shadow-md">
+    <nav className="bg-green-700 text-white py-4 px-6 shadow-md relative z-50">
       <div className="container mx-auto flex justify-between items-center">
         {/* Logo */}
         <Link href="/" className="text-2xl font-bold">
@@ -49,26 +49,34 @@ export default function Navbar() {
         {/* Menú de Navegación */}
         <div
           className={`${
-            menuOpen ? "block" : "hidden"
-          } lg:flex lg:items-center lg:space-x-6 absolute lg:relative top-16 lg:top-0 left-0 w-full lg:w-auto bg-green-700 lg:bg-transparent px-6 lg:px-0 py-4 lg:py-0 shadow-md lg:shadow-none transition-all`}
+            menuOpen ? "absolute left-0 right-0 top-16 w-full bg-green-700 p-4 shadow-lg space-y-2 text-center rounded-none" : "hidden"
+          } lg:flex flex-col lg:flex-row lg:items-center lg:space-x-6`}
         >
-          <Link href="/" className="block py-2 lg:py-0 hover:text-gray-300 transition">
+          <Link href="/" className="block py-2 lg:py-0 hover:text-gray-300 transition" onClick={() => setMenuOpen(false)}>
             Inicio
           </Link>
-          <Link href="/rooms" className="block py-2 lg:py-0 hover:text-gray-300 transition">
+          <Link href="/rooms" className="block py-2 lg:py-0 hover:text-gray-300 transition" onClick={() => setMenuOpen(false)}>
             Habitaciones
           </Link>
 
           {/* Mostrar "Gestión de Reservas" si es admin, sino "Mis Reservas" */}
           {user && (
-            <Link href="/reservations" className="block py-2 lg:py-0 hover:text-gray-300 transition">
+            <Link
+              href="/reservations"
+              className="block py-2 lg:py-0 hover:text-gray-300 transition"
+              onClick={() => setMenuOpen(false)}
+            >
               {user.role === "admin" ? "Gestión de Reservas" : "Mis Reservas"}
             </Link>
           )}
 
           {/* Solo mostrar "Usuarios" si el usuario es administrador */}
           {user?.role === "admin" && (
-            <Link href="/users" className="block py-2 lg:py-0 hover:text-gray-300 transition">
+            <Link
+              href="/users"
+              className="block py-2 lg:py-0 hover:text-gray-300 transition"
+              onClick={() => setMenuOpen(false)}
+            >
               Usuarios
             </Link>
           )}
@@ -81,7 +89,10 @@ export default function Navbar() {
                   {user.name} ({user.role === "admin" ? "Administrador" : "Cliente"})
                 </span>
                 <button
-                  onClick={handleLogout}
+                  onClick={() => {
+                    handleLogout();
+                    setMenuOpen(false);
+                  }}
                   className="block py-2 lg:py-0 bg-green-800 hover:bg-green-600 text-white px-4 rounded transition-all duration-300"
                 >
                   Salir
@@ -91,6 +102,7 @@ export default function Navbar() {
               <Link
                 href="/login"
                 className="block py-2 lg:py-0 bg-green-800 hover:bg-green-600 text-white px-4 rounded transition-all duration-300"
+                onClick={() => setMenuOpen(false)}
               >
                 Ingresar
               </Link>
