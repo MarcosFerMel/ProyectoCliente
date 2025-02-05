@@ -1,13 +1,17 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import FsLightbox from "fslightbox-react";
+import Image from "next/image";
 
+// Definir los tipos
 type Room = {
   id: number;
   name: string;
   capacity: number;
   price: number;
   status: string;
+  images: string[];
 };
 
 type User = {
@@ -15,11 +19,25 @@ type User = {
   name: string;
 };
 
+type LightboxController = {
+  toggler: boolean;
+  slide: number;
+  images: string[];
+};
+
 export default function Rooms() {
   const [rooms, setRooms] = useState<Room[]>([]);
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
 
+  // Estado para el Lightbox
+  const [lightboxController, setLightboxController] = useState<LightboxController>({
+    toggler: false,
+    slide: 1,
+    images: [],
+  });
+
+  // Estado para gestionar la reserva
   const [selectedRoom, setSelectedRoom] = useState<Room | null>(null);
   const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
   const [guestName, setGuestName] = useState("");
@@ -27,7 +45,6 @@ export default function Rooms() {
   const [checkOut, setCheckOut] = useState("");
   const [modalOpen, setModalOpen] = useState(false);
 
-  // Llamar a la API al cargar habitaciones y usuarios
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -46,6 +63,14 @@ export default function Rooms() {
 
     fetchData();
   }, []);
+
+  const openLightbox = (images: string[], index: number) => {
+    setLightboxController({
+      toggler: !lightboxController.toggler,
+      slide: index + 1,
+      images: images,
+    });
+  };
 
   const handleReserve = async () => {
     if (!guestName || !checkIn || !checkOut || !selectedUserId) {
@@ -92,111 +117,130 @@ export default function Rooms() {
   return (
     <div className="min-h-screen bg-gray-100 py-8">
       <div className="container mx-auto">
-        <h1 className="text-3xl font-bold text-center mb-8">Habitaciones Disponibles</h1>
+        <h1 className="text-4xl font-bold text-center mb-8">Nuestras Habitaciones</h1>
 
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {rooms.map((room) => (
-            <div
-              key={room.id}
-              className="bg-white shadow-md rounded-lg p-4 border border-gray-200"
-            >
-              <h2 className="text-xl font-bold">{room.name}</h2>
-              <p className="mt-2">Capacidad: {room.capacity} personas</p>
-              <p>Precio: {room.price} € / noche</p>
-              <p
-                className={`mt-2 ${
-                  room.status === "Disponible" ? "text-green-600" : "text-red-600"
-                }`}
-              >
-                Estado: {room.status}
-              </p>
-              {room.status === "Disponible" ? (
-                <button
-                  onClick={() => {
-                    setSelectedRoom(room);
-                    setModalOpen(true);
-                  }}
-                  className="mt-4 bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
-                >
-                  Reservar
-                </button>
-              ) : (
-                <button
-                  disabled
-                  className="mt-4 bg-gray-300 text-gray-600 font-bold py-2 px-4 rounded cursor-not-allowed"
-                >
-                  Ocupada
-                </button>
-              )}
+            <div key={room.id} className="bg-white shadow-lg rounded-lg overflow-hidden border border-gray-200">
+              <Image
+                src={room.images[0]}
+                alt={room.name}
+                width={400}
+                height={250}
+                className="w-full h-56 object-cover cursor-pointer"
+                onClick={() => openLightbox(room.images, 0)}
+              />
+              <div className="p-4">
+                <h2 className="text-2xl font-bold">{room.name}</h2>
+                <p className="mt-2 text-gray-600">Capacidad: {room.capacity} personas</p>
+                <p className="text-gray-600">Precio: {room.price} € / noche</p>
+                <p className={`mt-2 font-semibold ${room.status === "Disponible" ? "text-green-600" : "text-red-600"}`}>
+                  Estado: {room.status}
+                </p>
+
+                <div className="flex mt-4 space-x-2">
+                  {room.images.map((image, index) => (
+                    <img
+                      key={index}
+                      src={image}
+                      alt={`Vista ${index + 1}`}
+                      className="w-16 h-16 object-cover rounded-lg cursor-pointer hover:scale-105 transition-transform"
+                      onClick={() => openLightbox(room.images, index)}
+                    />
+                  ))}
+                </div>
+
+                {room.status === "Disponible" ? (
+                  <button
+                    onClick={() => {
+                      setSelectedRoom(room);
+                      setModalOpen(true);
+                    }}
+                    className="mt-4 w-full bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded transition"
+                  >
+                    Reservar
+                  </button>
+                ) : (
+                  <button
+                    disabled
+                    className="mt-4 w-full bg-gray-300 text-gray-600 font-bold py-2 px-4 rounded cursor-not-allowed"
+                  >
+                    Ocupada
+                  </button>
+                )}
+              </div>
             </div>
           ))}
         </div>
+      </div>
 
-        {/* Modal para crear una reserva */}
-        {modalOpen && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-            <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
-              <h2 className="text-xl font-bold mb-4">Reservar {selectedRoom?.name}</h2>
-              <label className="block mb-2">
-                Seleccione Usuario:
-                <select
-                  value={selectedUserId || ""}
-                  onChange={(e) => setSelectedUserId(Number(e.target.value))}
-                  className="w-full border border-gray-300 rounded px-3 py-2 mt-1"
-                >
-                  <option value="">Seleccione un usuario</option>
-                  {users.map((user) => (
-                    <option key={user.id} value={user.id}>
-                      {user.name}
-                    </option>
-                  ))}
-                </select>
-              </label>
-              <label className="block mb-2">
-                Nombre del Huésped:
-                <input
-                  type="text"
-                  value={guestName}
-                  onChange={(e) => setGuestName(e.target.value)}
-                  className="w-full border border-gray-300 rounded px-3 py-2 mt-1"
-                />
-              </label>
-              <label className="block mb-2">
-                Check-In:
-                <input
-                  type="date"
-                  value={checkIn}
-                  onChange={(e) => setCheckIn(e.target.value)}
-                  className="w-full border border-gray-300 rounded px-3 py-2 mt-1"
-                />
-              </label>
-              <label className="block mb-2">
-                Check-Out:
-                <input
-                  type="date"
-                  value={checkOut}
-                  onChange={(e) => setCheckOut(e.target.value)}
-                  className="w-full border border-gray-300 rounded px-3 py-2 mt-1"
-                />
-              </label>
-              <div className="flex justify-end gap-4 mt-4">
-                <button
-                  onClick={() => setModalOpen(false)}
-                  className="bg-gray-300 text-gray-700 px-4 py-2 rounded"
-                >
-                  Cancelar
-                </button>
-                <button
-                  onClick={handleReserve}
-                  className="bg-green-500 hover:bg-green-700 text-white px-4 py-2 rounded"
-                >
-                  Confirmar Reserva
-                </button>
-              </div>
+      {/* Galería Lightbox */}
+      {lightboxController.images.length > 0 && (
+        <FsLightbox
+          toggler={lightboxController.toggler}
+          sources={lightboxController.images}
+          slide={lightboxController.slide}
+        />
+      )}
+
+      {/* Modal para crear una reserva */}
+      {modalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+          <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
+            <h2 className="text-xl font-bold mb-4">Reservar {selectedRoom?.name}</h2>
+            <label className="block mb-2">
+              Seleccione Usuario:
+              <select
+                value={selectedUserId || ""}
+                onChange={(e) => setSelectedUserId(Number(e.target.value))}
+                className="w-full border border-gray-300 rounded px-3 py-2 mt-1"
+              >
+                <option value="">Seleccione un usuario</option>
+                {users.map((user) => (
+                  <option key={user.id} value={user.id}>
+                    {user.name}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label className="block mb-2">
+              Nombre del Huésped:
+              <input
+                type="text"
+                value={guestName}
+                onChange={(e) => setGuestName(e.target.value)}
+                className="w-full border border-gray-300 rounded px-3 py-2 mt-1"
+              />
+            </label>
+            <label className="block mb-2">
+              Check-In:
+              <input
+                type="date"
+                value={checkIn}
+                onChange={(e) => setCheckIn(e.target.value)}
+                className="w-full border border-gray-300 rounded px-3 py-2 mt-1"
+              />
+            </label>
+            <label className="block mb-2">
+              Check-Out:
+              <input
+                type="date"
+                value={checkOut}
+                onChange={(e) => setCheckOut(e.target.value)}
+                className="w-full border border-gray-300 rounded px-3 py-2 mt-1"
+              />
+            </label>
+            <div className="flex justify-end gap-4 mt-4">
+              <button onClick={() => setModalOpen(false)} className="bg-gray-300 text-gray-700 px-4 py-2 rounded">
+                Cancelar
+              </button>
+              <button onClick={handleReserve} className="bg-green-500 hover:bg-green-700 text-white px-4 py-2 rounded">
+                Confirmar Reserva
+              </button>
             </div>
           </div>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 }

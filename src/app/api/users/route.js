@@ -1,6 +1,8 @@
 let users = [
     { id: 1, name: "Juan Pérez", email: "juan.perez@example.com" },
     { id: 2, name: "María Gómez", email: "maria.gomez@example.com" },
+    { id: 3, name: "Paco Gómez", email: "paco.gomez@example.com" },
+    { id: 4, name: "Sara Fernández", email: "sara.fernandez@example.com" },
   ];
   
   export async function GET(request) {
