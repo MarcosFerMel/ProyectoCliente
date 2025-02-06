@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import FsLightbox from "fslightbox-react";
 import Image from "next/image";
-import { FaWifi, FaTv, FaSnowflake, FaUtensils, FaBath, FaCheck } from "react-icons/fa";
+import { FaWifi, FaTv, FaSnowflake, FaUtensils, FaBath } from "react-icons/fa";
 
 // Definir los tipos
 type Room = {
@@ -119,6 +119,7 @@ export default function Rooms() {
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {rooms.map((room) => (
             <div key={room.id} className="bg-white shadow-lg rounded-lg overflow-hidden border border-gray-200">
+              {/* Imagen Principal */}
               <Image
                 src={room.images[0]}
                 alt={room.name}
@@ -146,12 +147,23 @@ export default function Rooms() {
                         {service === "Aire Acondicionado" && <FaSnowflake className="text-blue-400" />}
                         {service === "Desayuno Incluido" && <FaUtensils className="text-yellow-500" />}
                         {service === "Baño Privado" && <FaBath className="text-blue-700" />}
-                        {service === "Baño Compartido" && <FaBath className="text-blue-700" />}
-                        {service === "Cocina" && <FaUtensils className="text-green-500" />}
                         <span>{service}</span>
                       </li>
                     ))}
                   </ul>
+                </div>
+
+                {/* Galería de imágenes */}
+                <div className="flex mt-4 space-x-2">
+                  {room.images.map((image, index) => (
+                    <img
+                      key={index}
+                      src={image}
+                      alt={`Vista ${index + 1}`}
+                      className="w-16 h-16 object-cover rounded-lg cursor-pointer hover:scale-105 transition-transform"
+                      onClick={() => openLightbox(room.images, index)}
+                    />
+                  ))}
                 </div>
 
                 {/* Botón Reservar */}
@@ -179,6 +191,15 @@ export default function Rooms() {
         </div>
       </div>
 
+      {/* Galería Lightbox */}
+      {lightboxController.images.length > 0 && (
+        <FsLightbox
+          toggler={lightboxController.toggler}
+          sources={lightboxController.images}
+          slide={lightboxController.slide}
+        />
+      )}
+
       {/* Modal para Reservar */}
       {modalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
@@ -201,26 +222,15 @@ export default function Rooms() {
               </select>
             </label>
 
+            {/* Fechas y botones */}
             <div className="grid grid-cols-2 gap-4 mb-4">
-              <label className="block">
-                <span className="font-semibold">Check-In:</span>
-                <input type="date" value={checkIn} onChange={(e) => setCheckIn(e.target.value)}
-                  className="w-full border border-gray-300 rounded px-3 py-2 mt-1" />
-              </label>
-              <label className="block">
-                <span className="font-semibold">Check-Out:</span>
-                <input type="date" value={checkOut} onChange={(e) => setCheckOut(e.target.value)}
-                  className="w-full border border-gray-300 rounded px-3 py-2 mt-1" />
-              </label>
+              <input type="date" value={checkIn} onChange={(e) => setCheckIn(e.target.value)} className="w-full border rounded px-3 py-2" />
+              <input type="date" value={checkOut} onChange={(e) => setCheckOut(e.target.value)} className="w-full border rounded px-3 py-2" />
             </div>
 
             <div className="flex justify-between mt-6">
-              <button onClick={handleReserve} className="bg-green-500 hover:bg-green-700 text-white px-4 py-2 rounded">
-                Confirmar Reserva
-              </button>
-              <button onClick={() => setModalOpen(false)} className="bg-gray-400 hover:bg-gray-600 text-white px-4 py-2 rounded">
-                Cancelar
-              </button>
+              <button onClick={handleReserve} className="bg-green-500 text-white px-4 py-2 rounded">Confirmar</button>
+              <button onClick={() => setModalOpen(false)} className="bg-gray-400 text-white px-4 py-2 rounded">Cancelar</button>
             </div>
           </div>
         </div>
