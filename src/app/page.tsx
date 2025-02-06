@@ -6,13 +6,12 @@ export default function Home() {
     <div className="min-h-screen bg-gray-100 flex flex-col">
       {/* Hero Section */}
       <div className="relative w-full h-[500px]">
-      <Image
-  src="/hero-image.jpg"
-  alt="Casa rural en la montaña"
-  fill
-  className="object-cover brightness-75"
-/>
-
+        <Image
+          src="/hero-image.jpg"
+          alt="Casa rural en la montaña"
+          fill
+          className="object-cover brightness-75"
+        />
         <div className="absolute inset-0 flex flex-col items-center justify-center text-white text-center">
           <h1 className="text-5xl font-bold">Casa Rural Altos de la Sierra</h1>
           <p className="text-xl mt-4">Descansa y disfruta de la naturaleza</p>
@@ -50,7 +49,7 @@ export default function Home() {
 
       {/* Galería de Imágenes */}
       <GalleryComponent />
-      
+
     </div>
   );
 }

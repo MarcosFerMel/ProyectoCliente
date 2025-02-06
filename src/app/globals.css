@@ -2,47 +2,37 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* 🌙 Modo Oscuro */
+html.dark {
+  background-color: #1a1a1a; /* Fondo oscuro para el dark mode */
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* 🔹 Mantener el color original del texto en todo momento */
+body, h1, h2, h3, h4, h5, h6, p, span, a, label, button {
+  color: var(--foreground) !important;
 }
 
-body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+/* 🔹 Mantener el color original del navbar */
+nav, .navbar-text {
+  background-color: #157f3d !important; /* Mantiene el color original de la navbar */
+  color: white !important;
 }
 
-/* Estilos Globales para Botones */
-.btn {
-  @apply bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded transition duration-300;
+/* 🔹 Evitar cambios en botones */
+button {
+  color: inherit !important;
 }
 
-.btn-danger {
-  @apply bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded transition duration-300;
+/* 🔹 Evitar cambios en formularios e inputs */
+input, select, textarea {
+  color: inherit !important;
+  background-color: transparent !important;
+  border-color: inherit !important;
 }
 
-/* Estilos para Tablas */
-.table-container {
-  @apply w-full border-collapse border border-gray-300;
-}
-
-.table-container th, .table-container td {
-  @apply border border-gray-300 px-4 py-2 text-center;
-}
-
-.table-container th {
-  @apply bg-gray-200;
-}
-
-/* Formularios */
-.input-field {
-  @apply w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500;
+/* 🔹 Evitar cambios en las tablas */
+.table-container th,
+.table-container td {
+  background-color: inherit !important;
+  color: inherit !important;
 }

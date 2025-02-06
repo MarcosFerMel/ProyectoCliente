@@ -26,25 +26,33 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center">
-      <div className="bg-white p-8 shadow-md rounded-lg w-96">
-        <h2 className="text-2xl font-bold mb-4 text-center">Iniciar Sesión</h2>
-        {error && <p className="text-red-500">{error}</p>}
-        <label className="block mb-2">Email:</label>
+    <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-gray-900">
+      <div className="bg-white dark:bg-gray-800 p-8 shadow-lg rounded-lg w-96 border border-gray-300 dark:border-gray-700">
+        <h2 className="text-2xl font-bold mb-6 text-center text-gray-900 dark:text-white">Iniciar Sesión</h2>
+        {error && <p className="text-red-500 text-sm mb-4 text-center">{error}</p>}
+        
+        <label className="block text-gray-700 dark:text-gray-300 mb-2 font-semibold">Email:</label>
         <input
           type="email"
-          className="input-field"
+          className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 mb-4 focus:outline-none focus:ring-2 focus:ring-green-500 dark:bg-gray-700 dark:text-white"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
         />
-        <label className="block mt-4 mb-2">Contraseña:</label>
+
+        <label className="block text-gray-700 dark:text-gray-300 mb-2 font-semibold">Contraseña:</label>
         <input
           type="password"
-          className="input-field"
+          className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 mb-6 focus:outline-none focus:ring-2 focus:ring-green-500 dark:bg-gray-700 dark:text-white"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
-        <button onClick={handleLogin} className="btn mt-4 w-full">Ingresar</button>
+
+        <button
+          onClick={handleLogin}
+          className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg transition-all duration-300"
+        >
+          Ingresar
+        </button>
       </div>
     </div>
   );

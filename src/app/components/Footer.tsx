@@ -3,7 +3,7 @@ import { FaFacebook, FaInstagram, FaTwitter } from "react-icons/fa";
 
 export default function Footer() {
   return (
-    <footer className="bg-gray-900 text-white py-8 mt-10">
+    <footer className="bg-gray-900 dark:bg-black text-white py-8 mt-10">
       <div className="container mx-auto text-center space-y-6 px-6 lg:px-20">
         {/* Logo y Descripción */}
         <div>
@@ -34,7 +34,9 @@ export default function Footer() {
         </div>
 
         {/* Copyright */}
-        <p className="text-gray-500 text-sm">© {new Date().getFullYear()} Casa Rural Altos de la Sierra. Todos los derechos reservados.</p>
+        <p className="text-gray-500 text-sm">
+          © {new Date().getFullYear()} Casa Rural Altos de la Sierra. Todos los derechos reservados.
+        </p>
       </div>
     </footer>
   );
