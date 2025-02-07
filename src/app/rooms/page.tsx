@@ -1,11 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { motion } from "framer-motion";
 import FsLightbox from "fslightbox-react";
 import Image from "next/image";
 import { FaWifi, FaTv, FaSnowflake, FaUtensils, FaBath } from "react-icons/fa";
 import LoadingSpinner from "@/app/components/LoadingSpinner";
-
 
 // Definir los tipos
 type Room = {
@@ -116,26 +116,41 @@ export default function Rooms() {
       </div>
     );
   }
-  
-  
 
   return (
     <div className="min-h-screen bg-gray-100 py-8">
       <div className="container mx-auto">
-        <h1 className="text-4xl font-bold text-center mb-8">Nuestras Habitaciones</h1>
+        <motion.h1
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="text-4xl font-bold text-center mb-8"
+        >
+          Nuestras Habitaciones
+        </motion.h1>
 
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {rooms.map((room) => (
-            <div key={room.id} className="bg-white shadow-lg rounded-lg overflow-hidden border border-gray-200">
+          {rooms.map((room, index) => (
+            <motion.div
+              key={room.id}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: index * 0.1 }}
+              whileHover={{ scale: 1.02, boxShadow: "0px 10px 30px rgba(0,0,0,0.1)" }}
+              className="bg-white shadow-md rounded-lg overflow-hidden border border-gray-200"
+            >
               {/* Imagen Principal */}
-              <Image
-                src={room.images[0]}
-                alt={room.name}
-                width={400}
-                height={250}
-                className="w-full h-56 object-cover cursor-pointer"
-                onClick={() => openLightbox(room.images, 0)}
-              />
+              <motion.div whileHover={{ scale: 1.05 }} transition={{ duration: 0.3 }}>
+                <Image
+                  src={room.images[0]}
+                  alt={room.name}
+                  width={400}
+                  height={250}
+                  className="w-full h-56 object-cover cursor-pointer"
+                  onClick={() => openLightbox(room.images, 0)}
+                />
+              </motion.div>
+
               <div className="p-4">
                 <h2 className="text-2xl font-bold">{room.name}</h2>
                 <p className="mt-2 text-gray-600">Capacidad: {room.capacity} personas</p>
@@ -161,30 +176,18 @@ export default function Rooms() {
                   </ul>
                 </div>
 
-                {/* Galería de imágenes */}
-                <div className="flex mt-4 space-x-2">
-                  {room.images.map((image, index) => (
-                    <img
-                      key={index}
-                      src={image}
-                      alt={`Vista ${index + 1}`}
-                      className="w-16 h-16 object-cover rounded-lg cursor-pointer hover:scale-105 transition-transform"
-                      onClick={() => openLightbox(room.images, index)}
-                    />
-                  ))}
-                </div>
-
-                {/* Botón Reservar */}
+                {/* Botón Reservar con Animación */}
                 {room.status === "Disponible" ? (
-                  <button
+                  <motion.button
                     onClick={() => {
                       setSelectedRoom(room);
                       setModalOpen(true);
                     }}
+                    whileTap={{ scale: 0.95 }}
                     className="mt-4 w-full bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded transition"
                   >
                     Reservar
-                  </button>
+                  </motion.button>
                 ) : (
                   <button
                     disabled
@@ -194,55 +197,10 @@ export default function Rooms() {
                   </button>
                 )}
               </div>
-            </div>
+            </motion.div>
           ))}
         </div>
       </div>
-
-      {/* Galería Lightbox */}
-      {lightboxController.images.length > 0 && (
-        <FsLightbox
-          toggler={lightboxController.toggler}
-          sources={lightboxController.images}
-          slide={lightboxController.slide}
-        />
-      )}
-
-      {/* Modal para Reservar */}
-      {modalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-          <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
-            <h2 className="text-xl font-bold mb-4 text-center">Reservar {selectedRoom?.name}</h2>
-
-            <label className="block mb-4">
-              <span className="font-semibold">Seleccione Usuario:</span>
-              <select
-                value={selectedUserId || ""}
-                onChange={(e) => setSelectedUserId(Number(e.target.value))}
-                className="w-full border border-gray-300 rounded px-3 py-2 mt-1"
-              >
-                <option value="">Seleccione un usuario</option>
-                {users.map((user) => (
-                  <option key={user.id} value={user.id}>
-                    {user.name}
-                  </option>
-                ))}
-              </select>
-            </label>
-
-            {/* Fechas y botones */}
-            <div className="grid grid-cols-2 gap-4 mb-4">
-              <input type="date" value={checkIn} onChange={(e) => setCheckIn(e.target.value)} className="w-full border rounded px-3 py-2" />
-              <input type="date" value={checkOut} onChange={(e) => setCheckOut(e.target.value)} className="w-full border rounded px-3 py-2" />
-            </div>
-
-            <div className="flex justify-between mt-6">
-              <button onClick={handleReserve} className="bg-green-500 text-white px-4 py-2 rounded">Confirmar</button>
-              <button onClick={() => setModalOpen(false)} className="bg-gray-400 text-white px-4 py-2 rounded">Cancelar</button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
