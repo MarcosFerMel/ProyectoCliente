@@ -8,7 +8,7 @@ let reservations = [
   { id: 2, room: "Suite Familiar", guestName: "María Gómez", checkIn: "2025-01-18", checkOut: "2025-01-22", status: "Confirmada", userId: 2 },
 ];
 
-// Obtener reservas (Usuarios ven solo sus reservas, Admins ven todas)
+// Obtener reservas (Usuarios ven solo sus reservas, Admins pueden filtrar por usuario)
 export async function GET(request) {
   const token = request.cookies.get("auth_token")?.value;
 
@@ -18,7 +18,16 @@ export async function GET(request) {
     const decoded = jwt.verify(token, SECRET_KEY);
     const { id: userId, role: userRole } = decoded;
 
-    if (userRole === "admin") return NextResponse.json(reservations);
+    const { searchParams } = new URL(request.url);
+    const requestedUserId = searchParams.get("userId");
+
+    if (userRole === "admin") {
+      if (requestedUserId) {
+        const userReservations = reservations.filter(res => res.userId === Number(requestedUserId));
+        return NextResponse.json(userReservations);
+      }
+      return NextResponse.json(reservations);
+    }
 
     return NextResponse.json(reservations.filter((res) => res.userId === userId));
   } catch (error) {
@@ -42,7 +51,7 @@ export async function PUT(request) {
     if (index === -1) return NextResponse.json({ message: "Reserva no encontrada" }, { status: 404 });
 
     reservations[index].status = status;
-    return NextResponse.json({ message: "Estado actualizado" }, { status: 200 });
+    return NextResponse.json({ message: "Estado actualizado", updatedReservation: reservations[index] }, { status: 200 });
   } catch (error) {
     return NextResponse.json({ message: "Token inválido" }, { status: 401 });
   }
