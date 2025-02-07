@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import LoadingSpinner from "@/app/components/LoadingSpinner";
+
 
 type Reservation = {
   id: number;
@@ -80,8 +82,14 @@ export default function Reservations() {
   };
 
   if (loading) {
-    return <p className="text-center mt-8">Cargando reservas...</p>;
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <LoadingSpinner />
+      </div>
+    );
   }
+  
+  
 
   return (
     <div className="min-h-screen p-6">

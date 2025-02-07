@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import FsLightbox from "fslightbox-react";
 import Image from "next/image";
 import { FaWifi, FaTv, FaSnowflake, FaUtensils, FaBath } from "react-icons/fa";
+import LoadingSpinner from "@/app/components/LoadingSpinner";
+
 
 // Definir los tipos
 type Room = {
@@ -108,8 +110,14 @@ export default function Rooms() {
   };
 
   if (loading) {
-    return <p className="text-center mt-8">Cargando habitaciones...</p>;
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <LoadingSpinner />
+      </div>
+    );
   }
+  
+  
 
   return (
     <div className="min-h-screen bg-gray-100 py-8">

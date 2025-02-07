@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import LoadingSpinner from "@/app/components/LoadingSpinner";
 
 // Definir los tipos para usuarios y reservas
 type User = {
@@ -83,8 +84,13 @@ export default function Users() {
   };
 
   if (loadingUsers) {
-    return <p className="text-center mt-8">Cargando usuarios...</p>;
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <LoadingSpinner />
+      </div>
+    );
   }
+  
 
   return (
     <div className="min-h-screen bg-gray-100 py-8">
