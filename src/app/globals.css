@@ -36,3 +36,14 @@ input, select, textarea {
   background-color: inherit !important;
   color: inherit !important;
 }
+/* 🔹 Ajustar el tamaño del logotipo en la navbar */
+.navbar-logo {
+  width: 210px !important; /* Aumento de tamaño */
+  height: auto !important; /* Mantener proporción */
+  border-radius: 0 !important; /* Eliminar bordes redondeados */
+}
+/* 🔹 Aumentar el tamaño del texto en la navbar */
+nav a {
+  font-size: 1.1rem; /* Ajusta el tamaño según lo que necesites */
+  font-weight: 600;
+}
