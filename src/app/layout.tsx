@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css"; 
 import Navbar from "@/app/components/Navbar";
 import Footer from "@/app/components/Footer";
+import ScrollToTop from "@/app/components/ScrollToTop";
 import { ThemeProvider } from "@/app/components/ThemeProvider";
 
 const geistSans = Geist({
@@ -31,9 +32,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <Navbar />
           <main className="container mx-auto p-6 flex-grow">{children}</main>
           <Footer />
+          <ScrollToTop /> {/* 🔹 Botón de "Subir arriba" */}
         </ThemeProvider>
       </body>
     </html>
   );
 }
-

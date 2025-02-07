@@ -18,7 +18,7 @@ export async function GET(request) {
       name: "Suite Familiar", 
       capacity: 4, 
       price: 150, 
-      status: "Ocupada", 
+      status: "Disponible", 
       images: [
         "/images/rooms/habitacion2.jpeg",
         "/images/rooms/habitacion2a.jpeg",

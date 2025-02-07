@@ -96,12 +96,12 @@ export default function Rooms() {
         body: JSON.stringify(reservation),
       });
   
-      const data = await response.json(); // Aquí se guarda la respuesta del backend
+      const data = await response.json();
   
       if (response.ok) {
         alert("Reserva creada con éxito");
   
-        // ✅ ACTUALIZAR ESTADO de la habitación en el frontend SIN `updatedRoom`
+        // ✅ Actualizar la habitación reservada en la UI
         setRooms((prevRooms) =>
           prevRooms.map((room) =>
             room.name === selectedRoom.name ? { ...room, status: "Pendiente" } : room
@@ -119,6 +119,7 @@ export default function Rooms() {
       alert("Error al realizar la reserva");
     }
   };
+  
   
   
 

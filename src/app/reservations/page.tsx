@@ -26,7 +26,6 @@ export default function Reservations() {
   const [user, setUser] = useState<{ name: string; id: number; role: string } | null>(null);
   const router = useRouter();
 
-  // Obtener usuario autenticado
   useEffect(() => {
     const fetchUser = async () => {
       try {
@@ -45,7 +44,6 @@ export default function Reservations() {
     fetchUser();
   }, [router]);
 
-  // Obtener lista de usuarios (solo admin)
   useEffect(() => {
     if (user?.role === "admin") {
       const fetchUsers = async () => {
@@ -63,7 +61,6 @@ export default function Reservations() {
     }
   }, [user]);
 
-  // Obtener reservas según el usuario seleccionado
   useEffect(() => {
     if (user) {
       const fetchReservations = async () => {
@@ -85,7 +82,6 @@ export default function Reservations() {
     }
   }, [user, selectedUserId]);
 
-  // Función para actualizar el estado de una reserva (solo admin)
   const updateReservationStatus = async (id: number, newStatus: string) => {
     try {
       const response = await fetch(`/api/reservations`, {
@@ -95,9 +91,11 @@ export default function Reservations() {
       });
 
       if (response.ok) {
-        const updatedReservation = await response.json();
+        const data = await response.json();
         setReservations((prev) =>
-          prev.map((res) => (res.id === id ? { ...res, status: updatedReservation.updatedReservation.status } : res))
+          prev.map((res) =>
+            res.id === id ? { ...res, status: data.updatedReservation.status } : res
+          )
         );
       } else {
         alert("Error al actualizar la reserva.");
@@ -117,7 +115,9 @@ export default function Reservations() {
 
   return (
     <div className="min-h-screen p-6">
-      <h1 className="text-3xl font-bold text-center mb-8">Gestión de Reservas</h1>
+      <h1 className="text-3xl font-bold text-center mb-8">
+        {user?.role === "admin" ? "Gestión de Reservas" : "Mis Reservas"}
+      </h1>
 
       {/* Selector de Usuario (Solo para Admins) */}
       {user?.role === "admin" && (
@@ -153,24 +153,32 @@ export default function Reservations() {
           <tbody>
             {reservations.map((reservation) => (
               <tr key={reservation.id} className="text-center">
-                <td className="border px-4 py-2">{reservation.room}</td>
-                <td className="border px-4 py-2">{reservation.checkIn}</td>
-                <td className="border px-4 py-2">{reservation.checkOut}</td>
-                <td className="border px-4 py-2">{reservation.status}</td>
+                <td className="border border-gray-300 px-4 py-2">{reservation.room}</td>
+                <td className="border border-gray-300 px-4 py-2">{reservation.checkIn}</td>
+                <td className="border border-gray-300 px-4 py-2">{reservation.checkOut}</td>
+                <td
+                  className={`border border-gray-300 px-4 py-2 ${
+                    reservation.status === "Confirmada" ? "text-green-600" :
+                    reservation.status === "Cancelada" ? "text-red-600" :
+                    "text-yellow-600"
+                  }`}
+                >
+                  {reservation.status}
+                </td>
 
                 {/* SOLO SE MUESTRAN LOS BOTONES SI EL USUARIO ES ADMIN */}
                 {user?.role === "admin" && (
-                  <td className="border px-4 py-2">
+                  <td className="border border-gray-300 px-4 py-2">
                     <button
                       onClick={() => updateReservationStatus(reservation.id, "Confirmada")}
-                      className="bg-green-500 text-white px-3 py-1 rounded mr-2"
+                      className="bg-green-500 hover:bg-green-700 text-white px-3 py-1 rounded mr-2 transition"
                       disabled={reservation.status === "Confirmada"}
                     >
                       Confirmar
                     </button>
                     <button
                       onClick={() => updateReservationStatus(reservation.id, "Cancelada")}
-                      className="bg-red-500 text-white px-3 py-1 rounded"
+                      className="bg-red-500 hover:bg-red-700 text-white px-3 py-1 rounded transition"
                       disabled={reservation.status === "Cancelada"}
                     >
                       Cancelar
