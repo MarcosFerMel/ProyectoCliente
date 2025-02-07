@@ -74,20 +74,20 @@ export default function Rooms() {
   };
 
   const handleReserve = async () => {
-    if (!checkIn || !checkOut || !selectedUserId) {
+    if (!checkIn || !checkOut || !selectedUserId || !selectedRoom) {
       alert("Por favor, complete todos los campos.");
       return;
     }
-
+  
     try {
       const reservation = {
-        room: selectedRoom?.name,
+        room: selectedRoom.name,
         userId: selectedUserId,
         checkIn,
         checkOut,
-        status: "Confirmada",
+        status: "Pendiente"
       };
-
+  
       const response = await fetch("/api/reservations", {
         method: "POST",
         headers: {
@@ -95,19 +95,34 @@ export default function Rooms() {
         },
         body: JSON.stringify(reservation),
       });
-
+  
+      const data = await response.json(); // Aquí se guarda la respuesta del backend
+  
       if (response.ok) {
         alert("Reserva creada con éxito");
+  
+        // ✅ ACTUALIZAR ESTADO de la habitación en el frontend SIN `updatedRoom`
+        setRooms((prevRooms) =>
+          prevRooms.map((room) =>
+            room.name === selectedRoom.name ? { ...room, status: "Pendiente" } : room
+          )
+        );
+  
         setModalOpen(false);
         setCheckIn("");
         setCheckOut("");
       } else {
-        alert("Hubo un error al crear la reserva.");
+        alert(`Error: ${data.message}`);
       }
     } catch (error) {
       console.error("Error al realizar la reserva:", error);
+      alert("Error al realizar la reserva");
     }
   };
+  
+  
+
+  
 
   if (loading) {
     return (

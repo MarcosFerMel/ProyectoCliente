@@ -56,3 +56,45 @@ export async function PUT(request) {
     return NextResponse.json({ message: "Token inválido" }, { status: 401 });
   }
 }
+
+// Crear nueva reserva
+export async function POST(request) {
+  const token = request.cookies.get("auth_token")?.value;
+
+  if (!token) {
+    console.error("❌ ERROR: No autenticado - Token no encontrado");
+    return NextResponse.json({ message: "No autenticado" }, { status: 401 });
+  }
+
+  try {
+    console.log("✅ Token recibido, verificando...");
+    const decoded = jwt.verify(token, SECRET_KEY);
+    console.log("🔑 Usuario autenticado:", decoded);
+
+    const { room, checkIn, checkOut } = await request.json();
+    console.log("📌 Datos recibidos en el cuerpo:", { room, checkIn, checkOut });
+
+    if (!room || !checkIn || !checkOut) {
+      console.error("❌ ERROR: Faltan datos en la reserva");
+      return NextResponse.json({ message: "Todos los campos son obligatorios" }, { status: 400 });
+    }
+
+    const newReservation = {
+      id: reservations.length + 1,
+      room,
+      guestName: decoded.name,
+      checkIn,
+      checkOut,
+      status: "Pendiente",
+      userId: decoded.id,
+    };
+
+    reservations.push(newReservation);
+
+    console.log("✅ Reserva creada con éxito:", newReservation);
+    return NextResponse.json({ message: "Reserva creada con éxito", reservation: newReservation }, { status: 201 });
+  } catch (error) {
+    console.error("❌ ERROR en la reserva:", error);
+    return NextResponse.json({ message: "Error al procesar la reserva", error: error.message }, { status: 500 });
+  }
+}
