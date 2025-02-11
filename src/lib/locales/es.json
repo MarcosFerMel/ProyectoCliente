@@ -1,0 +1,21 @@
+{
+    "NAVBAR": {
+      "HOME": "Inicio",
+      "ROOMS": "Habitaciones",
+      "RESERVATIONS": "Mis Reservas",
+      "ADMIN_PANEL": "Gestión de Reservas",
+      "USERS": "Usuarios",
+      "LOGIN": "Ingresar",
+      "LOGOUT": "Salir",
+      "ADMIN": "Administrador",
+      "CLIENT": "Cliente"
+    },
+    
+        "LAYOUT": {
+            "TITLE": "Casa Rural Altos de la Sierra",
+            "DESCRIPTION": "Sistema de gestión de reservas para una casa rural"
+        }
+    }
+    
+  
+  

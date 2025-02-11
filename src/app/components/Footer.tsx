@@ -26,7 +26,7 @@ export default function Footer() {
           </p>
 
           <div className="flex flex-col mt-6 space-y-3 text-gray-300">
-            <p>📍 Dirección: Calle Sierra 123, Pueblo Encantador</p>
+            <p>📍 Dirección: Calle Sierra 123, Cazorla (Jaén)</p>
             <p>📞 Teléfono: +34 123 456 789</p>
             <p>✉️ Email: info@casarural.com</p>
           </div>

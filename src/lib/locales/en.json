@@ -1,0 +1,18 @@
+{
+    "NAVBAR": {
+      "HOME": "Home",
+      "ROOMS": "Rooms",
+      "RESERVATIONS": "My Reservations",
+      "ADMIN_PANEL": "Manage Reservations",
+      "USERS": "Users",
+      "LOGIN": "Login",
+      "LOGOUT": "Logout",
+      "ADMIN": "Administrator",
+      "CLIENT": "Client"
+    }
+    ,
+    "LAYOUT": {
+        "TITLE": "Casa Rural Altos de la Sierra",
+        "DESCRIPTION": "Booking management system for a rural house"
+    }
+}
