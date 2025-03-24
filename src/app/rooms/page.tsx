@@ -49,6 +49,7 @@ export default function Rooms() {
   useEffect(() => {
     const fetchData = async () => {
       try {
+        //Get rooms and users data from the API
         const roomsResponse = await fetch("/api/rooms");
         const usersResponse = await fetch("/api/users");
         const roomsData = await roomsResponse.json();
