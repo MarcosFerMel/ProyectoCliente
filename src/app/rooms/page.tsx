@@ -6,6 +6,7 @@ import Image from "next/image";
 import { FaWifi, FaTv, FaSnowflake, FaUtensils, FaBath } from "react-icons/fa";
 import LoadingSpinner from "@/app/components/LoadingSpinner";
 import { motion } from "framer-motion";
+import { apiRequest } from "@/lib/api/api";
 
 // Definir los tipos
 type Room = {
@@ -49,11 +50,12 @@ export default function Rooms() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const roomsResponse = await fetch("/api/rooms");
+        //const roomsResponse = await fetch("/api/rooms");
+        const roomsResponse = await apiRequest('/rooms');
         const usersResponse = await fetch("/api/users");
-        const roomsData = await roomsResponse.json();
+ 
         const usersData = await usersResponse.json();
-        setRooms(roomsData);
+        setRooms(roomsResponse);
         setUsers(usersData);
       } catch (error) {
         console.error("Error al cargar datos:", error);
