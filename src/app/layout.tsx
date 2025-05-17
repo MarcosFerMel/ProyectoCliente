@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import "./globals.css"; 
+import "./globals.css";
 import Navbar from "@/app/components/Navbar";
 import Footer from "@/app/components/Footer";
 import ScrollToTop from "@/app/components/ScrollToTop";
 import { ThemeProvider } from "@/app/components/ThemeProvider";
+import { LanguageProvider } from "@/lib/locales/LanguageContext";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -28,12 +29,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link rel="icon" href="/favicon.ico" type="image/x-icon" sizes="any" />
       </head>
       <body className="antialiased flex flex-col min-h-screen">
-        <ThemeProvider>
-          <Navbar />
-          <main className="container mx-auto p-6 flex-grow">{children}</main>
-          <Footer />
-          <ScrollToTop /> {/* 🔹 Botón de "Subir arriba" */}
-        </ThemeProvider>
+        <LanguageProvider>
+          <ThemeProvider>
+            <Navbar />
+            <main className="container mx-auto p-6 flex-grow">{children}</main>
+            <Footer />
+            <ScrollToTop /> 
+          </ThemeProvider>
+        </LanguageProvider>
       </body>
     </html>
   );

@@ -1,0 +1,44 @@
+{
+  "NAVBAR": {
+    "HOME": "Home",
+    "ROOMS": "Rooms",
+    "RESERVATIONS": "My Reservations",
+    "ADMIN_PANEL": "Manage Reservations",
+    "USERS": "Users",
+    "LOGIN": "Login",
+    "LOGOUT": "Logout",
+    "ADMIN": "Administrator",
+    "CLIENT": "Client"
+  },
+  "LAYOUT": {
+    "TITLE": "Casa Rural Altos de la Sierra",
+    "DESCRIPTION": "Booking management system for a rural house"
+  },
+  "HOME": {
+    "HERO_IMAGE_ALT": "Country house in the mountains",
+    "HERO_TITLE": "Altos de la Sierra Country House",
+    "HERO_SUBTITLE": "Relax and enjoy nature",
+    "ABOUT_TITLE": "About Us",
+    "ABOUT_TEXT": "Our rural house offers a peaceful setting in the heart of nature. Enjoy an unforgettable stay with stunning views and exceptional comfort.",
+    "SERVICES_TITLE": "Our Services",
+    "SERVICE_1_TITLE": "Comfortable Lodging",
+    "SERVICE_1_TEXT": "Cozy rooms with breathtaking views.",
+    "SERVICE_2_TITLE": "Local Cuisine",
+    "SERVICE_2_TEXT": "Enjoy fresh products and traditional recipes.",
+    "SERVICE_3_TITLE": "Outdoor Activities",
+    "SERVICE_3_TEXT": "Hiking, cycling, and much more in nature."
+  },
+  "FOOTER": {
+    "LOCATION": "Location",
+    "TITLE": "Altos de la Sierra Country House",
+    "DESCRIPTION": "Enjoy nature with us. Comfort, tranquility, and the best service.",
+    "ADDRESS": "Address: Calle Sierra 123, Cazorla",
+    "PHONE": "Phone: +34 123 456 789",
+    "EMAIL": "Email: info@casarural.com",
+    "COPYRIGHT": "Altos de la Sierra Country House. All rights reserved."
+  },
+  "GALLERY": {
+    "TITLE": "Image Gallery",
+    "IMAGE_ALT": "Country house {{number}}"
+  }
+}

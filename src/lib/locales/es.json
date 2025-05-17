@@ -1,0 +1,44 @@
+{
+    "NAVBAR": {
+        "HOME": "Inicio",
+        "ROOMS": "Habitaciones",
+        "RESERVATIONS": "Mis Reservas",
+        "ADMIN_PANEL": "Gestión de Reservas",
+        "USERS": "Usuarios",
+        "LOGIN": "Ingresar",
+        "LOGOUT": "Salir",
+        "ADMIN": "Administrador",
+        "CLIENT": "Cliente"
+    },
+    "LAYOUT": {
+        "TITLE": "Casa Rural Altos de la Sierra",
+        "DESCRIPTION": "Sistema de gestión de reservas para una casa rural"
+    },
+    "HOME": {
+        "HERO_IMAGE_ALT": "Casa rural en la montaña",
+        "HERO_TITLE": "Casa Rural Altos de la Sierra",
+        "HERO_SUBTITLE": "Descansa y disfruta de la naturaleza",
+        "ABOUT_TITLE": "Sobre Nosotros",
+        "ABOUT_TEXT": "Nuestra casa rural ofrece un entorno tranquilo en plena naturaleza. Disfruta de una estancia inolvidable con vistas impresionantes y comodidad excepcional.",
+        "SERVICES_TITLE": "Nuestros Servicios",
+        "SERVICE_1_TITLE": "Alojamiento Confortable",
+        "SERVICE_1_TEXT": "Habitaciones acogedoras con vistas espectaculares.",
+        "SERVICE_2_TITLE": "Gastronomía Local",
+        "SERVICE_2_TEXT": "Disfruta de productos frescos y recetas tradicionales.",
+        "SERVICE_3_TITLE": "Actividades al Aire Libre",
+        "SERVICE_3_TEXT": "Senderismo, ciclismo y mucho más en plena naturaleza."
+    },
+    "FOOTER": {
+        "LOCATION": "Ubicación",
+        "TITLE": "Casa Rural Altos de la Sierra",
+        "DESCRIPTION": "Disfruta de la naturaleza con nosotros. Comodidad, tranquilidad y la mejor atención.",
+        "ADDRESS": "Dirección: Calle Sierra 123, Cazorla",
+        "PHONE": "Teléfono: +34 123 456 789",
+        "EMAIL": "Email: info@casarural.com",
+        "COPYRIGHT": "Casa Rural Altos de la Sierra. Todos los derechos reservados."
+    },
+    "GALLERY": {
+        "TITLE": "Galería de Imágenes",
+        "IMAGE_ALT": "Casa rural {{number}}"
+    }
+}

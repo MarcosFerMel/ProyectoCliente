@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import FsLightbox from "fslightbox-react";
+import { useLanguage } from "@/lib/locales/LanguageContext";
 
 const images = [
   "/images/casa1.jpg",
@@ -13,6 +14,8 @@ const images = [
 ];
 
 export default function GalleryComponent() {
+  const { translator } = useLanguage();
+
   const [lightboxController, setLightboxController] = useState({
     toggler: false,
     slide: 1,
@@ -27,13 +30,15 @@ export default function GalleryComponent() {
 
   return (
     <div className="container mx-auto my-12 px-6 text-center">
-      <h2 className="text-3xl font-bold mb-6">Galería de Imágenes</h2>
+      <h2 className="text-3xl font-bold mb-6">
+        {translator.t("GALLERY.TITLE")}
+      </h2>
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
         {images.map((image, index) => (
           <div key={index} className="cursor-pointer" onClick={() => openLightbox(index)}>
             <img
               src={image}
-              alt={`Casa rural ${index + 1}`}
+              alt={translator.t("GALLERY.IMAGE_ALT", { number: index + 1 })}
               className="w-full h-48 object-cover rounded-lg shadow-md transition-transform transform hover:scale-105"
             />
           </div>

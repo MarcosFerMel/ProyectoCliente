@@ -74,7 +74,7 @@ export default function Rooms() {
   };
 
   const handleReserve = async () => {
-    if (!checkIn || !checkOut || !selectedUserId || !selectedRoom) {
+    if (!checkIn || !checkOut || !selectedRoom) {
       alert("Por favor, complete todos los campos.");
       return;
     }
@@ -101,7 +101,7 @@ export default function Rooms() {
       if (response.ok) {
         alert("Reserva creada con éxito");
   
-        // ✅ Actualizar la habitación reservada en la UI
+        
         setRooms((prevRooms) =>
           prevRooms.map((room) =>
             room.name === selectedRoom.name ? { ...room, status: "Pendiente" } : room
@@ -238,15 +238,7 @@ export default function Rooms() {
           <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
             <h2 className="text-xl font-bold mb-4 text-center">Reservar {selectedRoom.name}</h2>
 
-            <label className="block mb-4">
-              <span className="font-semibold">Seleccione Usuario:</span>
-              <select value={selectedUserId || ""} onChange={(e) => setSelectedUserId(Number(e.target.value))} className="w-full border border-gray-300 rounded px-3 py-2 mt-1">
-                <option value="">Seleccione un usuario</option>
-                {users.map((user) => (
-                  <option key={user.id} value={user.id}>{user.name}</option>
-                ))}
-              </select>
-            </label>
+            
 
             <div className="grid grid-cols-2 gap-4 mb-4">
               <input type="date" value={checkIn} onChange={(e) => setCheckIn(e.target.value)} className="w-full border rounded px-3 py-2" />
