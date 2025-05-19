@@ -1,7 +1,8 @@
-const API_BASE_URL = 'http://localhost:3001';
+export const API_URL =
+  process.env.NEXT_PUBLIC_API_URL || "https://servidor-plum.vercel.app";
 
 export const apiRequest = async (endpoint: string, options: RequestInit = {}) => {
-    const url = `${API_BASE_URL}${endpoint}`;
+    const url = `${API_URL}${endpoint}`;
 
     const response = await fetch(url, {
         ...options,
